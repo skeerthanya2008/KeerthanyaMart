@@ -15,7 +15,6 @@ FROM tomcat:9-jdk17-temurin
 ENV CATALINA_HOME=/usr/local/tomcat
 ENV DB_URL=jdbc:h2:file:/data/keerthanyamart
 ENV DB_USER=sa
-ENV DB_PASSWORD=
 ENV SEED_DEMO_DATA=false
 
 USER root
