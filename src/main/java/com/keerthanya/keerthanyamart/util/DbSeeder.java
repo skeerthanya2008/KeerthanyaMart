@@ -38,17 +38,17 @@ public final class DbSeeder {
     private static void seedUsers(Connection conn) throws SQLException {
         String sql = "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)";
         try (var ps = conn.prepareStatement(sql)) {
-            insert(ps, "Admin", "admin@keerthanyamart.com", "Admin@12345", "ADMIN");
+            String adminPassword = System.getenv("ADMIN_PASSWORD");
+            if (adminPassword == null || adminPassword.isBlank()) {
+                throw new IllegalStateException("Set ADMIN_PASSWORD before seeding the admin account.");
+            }
+            insert(ps, "Admin", "admin@keerthanyamart.com", adminPassword, "ADMIN");
             insert(ps, "Priya Seller", "priya.seller@keerthanyamart.com", "Seller@123", "SELLER");
             insert(ps, "Arjun Seller", "arjun.seller@keerthanyamart.com", "Seller@123", "SELLER");
             insert(ps, "Divya Buyer", "divya.buyer@keerthanyamart.com", "Buyer@1234", "BUYER");
             insert(ps, "Karthik Buyer", "karthik.buyer@keerthanyamart.com", "Buyer@1234", "BUYER");
         }
-        System.out.println("Seeded users. Demo passwords (change/remove before any real deployment):");
-        System.out.println("  admin@keerthanyamart.com / Admin@12345");
-        System.out.println("  priya.seller@keerthanyamart.com / Seller@123 (seller id 2, used by seed.sql)");
-        System.out.println("  arjun.seller@keerthanyamart.com / Seller@123 (seller id 3, used by seed.sql)");
-        System.out.println("  divya.buyer@keerthanyamart.com / Buyer@1234");
+        System.out.println("Seeded demo accounts. Admin password is configured through ADMIN_PASSWORD.");
     }
 
     private static void insert(java.sql.PreparedStatement ps, String name, String email,

@@ -33,9 +33,9 @@ public class AppContextListener implements ServletContextListener {
         Properties props = loadConfig();
 
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(props.getProperty("db.url", "jdbc:h2:tcp://localhost:9092/./data/keerthanyamart"));
-        config.setUsername(props.getProperty("db.user", "sa"));
-        config.setPassword(props.getProperty("db.password", ""));
+        config.setJdbcUrl(System.getenv().getOrDefault("DB_URL", props.getProperty("db.url", "jdbc:h2:tcp://localhost:9092/./data/keerthanyamart")));
+        config.setUsername(System.getenv().getOrDefault("DB_USER", props.getProperty("db.user", "sa")));
+        config.setPassword(System.getenv().getOrDefault("DB_PASSWORD", props.getProperty("db.password", "")));
         config.setDriverClassName("org.h2.Driver");
         config.setMaximumPoolSize(Integer.parseInt(props.getProperty("db.pool.maxSize", "10")));
         config.setMinimumIdle(Integer.parseInt(props.getProperty("db.pool.minIdle", "2")));
