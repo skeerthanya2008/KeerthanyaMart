@@ -5,6 +5,9 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Properties;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -42,9 +45,35 @@ public class AppContextListener implements ServletContextListener {
         config.setPoolName("KeerthanyaMartPool");
 
         this.dataSource = new HikariDataSource(config);
+        patchProductImages(this.dataSource);
         sce.getServletContext().setAttribute(DATASOURCE_ATTR, dataSource);
         sce.getServletContext().setAttribute(ServiceRegistry.ATTR, new ServiceRegistry(dataSource));
         LOG.info("HikariCP pool initialized for {}", config.getJdbcUrl());
+    }
+
+    private void patchProductImages(DataSource ds) {
+        String[][] updates = {
+            {"Wireless Mouse", "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&auto=format&fit=crop&q=80"},
+            {"Mechanical Keyboard", "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80"},
+            {"USB-C Hub", "https://images.unsplash.com/photo-1616440347437-b1c73416efc2?w=600&auto=format&fit=crop&q=80"},
+            {"Cotton T-Shirt", "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80"},
+            {"Denim Jacket", "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=600&auto=format&fit=crop&q=80"},
+            {"Running Shoes", "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80"},
+            {"Stainless Steel Bottle", "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&auto=format&fit=crop&q=80"},
+            {"Desk Lamp", "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&auto=format&fit=crop&q=80"}
+        };
+
+        try (Connection conn = ds.getConnection();
+             PreparedStatement ps = conn.prepareStatement("UPDATE products SET image_url = ? WHERE name = ? AND (image_url LIKE '%picsum%' OR image_url IS NULL OR image_url = '')")) {
+            for (String[] item : updates) {
+                ps.setString(1, item[1]);
+                ps.setString(2, item[0]);
+                ps.executeUpdate();
+            }
+            LOG.info("Product images patched to matched high-resolution photos.");
+        } catch (SQLException e) {
+            LOG.warn("Could not patch product images: {}", e.getMessage());
+        }
     }
 
     @Override

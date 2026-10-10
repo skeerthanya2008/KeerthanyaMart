@@ -27,7 +27,7 @@ public class JdbcCartDAO implements CartDAO {
     @Override
     public List<CartItem> findByUser(long userId) throws DataAccessException {
         String sql = "SELECT ci.id, ci.user_id, ci.product_id, ci.quantity, ci.created_at, "
-                + "p.name AS product_name, p.price AS unit_price "
+                + "p.name AS product_name, p.price AS unit_price, p.image_url AS image_url "
                 + "FROM cart_items ci JOIN products p ON p.id = ci.product_id "
                 + "WHERE ci.user_id = ? ORDER BY ci.created_at";
         try (Connection conn = dataSource.getConnection();
@@ -48,7 +48,7 @@ public class JdbcCartDAO implements CartDAO {
     @Override
     public Optional<CartItem> findByUserAndProduct(long userId, long productId) throws DataAccessException {
         String sql = "SELECT ci.id, ci.user_id, ci.product_id, ci.quantity, ci.created_at, "
-                + "p.name AS product_name, p.price AS unit_price "
+                + "p.name AS product_name, p.price AS unit_price, p.image_url AS image_url "
                 + "FROM cart_items ci JOIN products p ON p.id = ci.product_id "
                 + "WHERE ci.user_id = ? AND ci.product_id = ?";
         try (Connection conn = dataSource.getConnection();
@@ -132,6 +132,7 @@ public class JdbcCartDAO implements CartDAO {
         item.setUserId(rs.getLong("user_id"));
         item.setProductId(rs.getLong("product_id"));
         item.setProductName(rs.getString("product_name"));
+        item.setImageUrl(rs.getString("image_url"));
         item.setUnitPrice(rs.getBigDecimal("unit_price"));
         item.setQuantity(rs.getInt("quantity"));
         Timestamp createdAt = rs.getTimestamp("created_at");

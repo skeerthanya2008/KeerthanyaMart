@@ -8,7 +8,12 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     const role = document.getElementById("role").value;
     try {
         await api.post("/auth/register", { name, email, password, role });
-        window.location.href = "index.jsp";
+        showToast("Account created successfully!", "success");
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect") || "index.jsp";
+        setTimeout(() => {
+            window.location.href = redirect;
+        }, 500);
     } catch (err) {
         errorEl.textContent = err.message;
     }

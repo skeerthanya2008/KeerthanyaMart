@@ -10,6 +10,7 @@ public class CartItem {
     private Long userId;
     private Long productId;
     private String productName;
+    private String imageUrl;
     private BigDecimal unitPrice;
     private int quantity;
     private LocalDateTime createdAt;
@@ -47,6 +48,14 @@ public class CartItem {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public BigDecimal getUnitPrice() {
